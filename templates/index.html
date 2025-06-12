@@ -1,0 +1,3162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Swap Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Hero Section Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Landing Page Styles */
+        .landing-page {
+            text-align: center;
+            color: white;
+            padding: 60px 20px;
+        }
+        
+        .hero-title {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 60px 0;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            animation: pulse 2s infinite;
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .feature-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .cta-buttons {
+            margin-top: 40px;
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+        
+        .cta-btn {
+            display: inline-block;
+            padding: 15px 40px;
+            margin: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+        }
+        
+        .cta-btn:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .cta-btn.primary {
+            background: #ff6b6b;
+            border-color: #ff6b6b;
+        }
+        
+        .cta-btn.primary:hover {
+            background: #ff5252;
+            color: white;
+        }
+        
+        /* Auth Section */
+        .auth-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        .auth-section.active {
+            display: flex;
+        }
+        
+        .auth-container {
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 450px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+        
+        .auth-section.active .auth-container {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            color: #333;
+        }
+        
+        /* Tab Buttons */
+        .tab-buttons {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 3px;
+            margin-bottom: 15px;
+        }
+        
+        .tab-button {
+            flex: 1;
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .tab-button.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tab-button:hover {
+            background: rgba(255,255,255,0.7);
+        }
+        
+        /* Auth Form Styles */
+        .auth-form {
+            display: block;
+        }
+        
+        .auth-form.hidden {
+            display: none;
+        }
+        
+        /* Dashboard Styles */
+        .dashboard {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: white;
+            z-index: 998;
+            overflow-y: auto;
+            padding: 80px 20px 20px;
+        }
+        
+        .dashboard.active {
+            display: block;
+        }
+        
+        .dashboard .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .logout-btn {
+            padding: 10px 20px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: #c82333;
+        }
+        
+        .dashboard-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 5px;
+        }
+        
+        .dashboard-tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .dashboard-tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .user-card {
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+        
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+        
+        .user-card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .user-card-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .skills-section {
+            margin-top: 15px;
+        }
+        
+        .skills-section h4 {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .skills-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .skill-tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .skill-tag.wanted {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .connect-btn {
+            width: 100%;
+            padding: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .connect-btn:hover {
+            background: #5a6fd8;
+        }
+        
+        /* Profile Management Styles */
+        .profile-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .profile-section h4 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .profile-section .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .profile-section .submit-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+        
+        .profile-section .submit-btn:hover {
+            background: linear-gradient(135deg, #218838, #1ea080);
+        }
+        
+        .profile-skills-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-skills-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .form-group {
+            margin-bottom: 12px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .skills-input {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .skills-input input {
+            flex: 1;
+        }
+        
+        .add-skill-btn {
+            padding: 8px 14px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .add-skill-btn:hover {
+            background: #218838;
+        }
+        
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+            min-height: 25px;
+            padding: 6px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px dashed #dee2e6;
+        }
+        
+        .skill-tag {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+        
+        .skill-tag .remove {
+            cursor: pointer;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            transition: background 0.3s;
+        }
+        
+        .skill-tag .remove:hover {
+            background: rgba(255,255,255,0.5);
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 5px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            font-weight: 500;
+            animation: fadeInUp 0.5s ease;
+        }
+        
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        
+        /* Search and Filter */
+        .search-bar {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+        
+        .search-bar:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #e9ecef;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .no-users {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .no-users img {
+            width: 100px;
+            opacity: 0.5;
+            margin-bottom: 20px;
+        }
+        
+        /* Request Management Styles */
+        .request-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+        
+        .request-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .request-header .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .request-header .user-info h4 {
+            margin: 0;
+            color: #333;
+            font-size: 1.1rem;
+        }
+        
+        .request-type {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 2px 0 0 0;
+        }
+        
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+            border-color: #ffeaa7;
+        }
+        
+        .status-accepted {
+            background: #d4edda;
+            color: #155724;
+            border-color: #00b894;
+        }
+        
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+            border-color: #e17055;
+        }
+        
+        .status-completed {
+            background: #e2e3f3;
+            color: #667eea;
+            border-color: #667eea;
+        }
+        
+        .request-skills {
+            margin: 15px 0;
+        }
+        
+        .skill-exchange {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .skill-offer, .skill-want {
+            text-align: center;
+        }
+        
+        .skill-offer strong, .skill-want strong {
+            display: block;
+            color: #667eea;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .request-message {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f0f3ff;
+            border-radius: 10px;
+            border-left: 3px solid #667eea;
+        }
+        
+        .request-message p {
+            margin: 0;
+            color: #555;
+            font-style: italic;
+        }
+        
+        .request-actions {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .accept-btn {
+            background: #00b894;
+            color: white;
+        }
+        
+        .accept-btn:hover {
+            background: #00a085;
+        }
+        
+        .reject-btn {
+            background: #e17055;
+            color: white;
+        }
+        
+        .reject-btn:hover {
+            background: #d63031;
+        }
+        
+        .cancel-btn {
+            background: #ffeaa7;
+            color: #856404;
+        }
+        
+        .cancel-btn:hover {
+            background: #fdcb6e;
+        }
+        
+        .complete-btn {
+            background: #667eea;
+            color: white;
+        }
+        
+        .complete-btn:hover {
+            background: #5a6fd8;
+        }
+        
+        .request-date {
+            text-align: right;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .no-requests {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        
+        .no-requests h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .loading-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .skill-exchange {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .request-actions {
+                flex-direction: column;
+            }
+            
+            .action-btn {
+                width: 100%;
+            }
+            
+            .auth-section {
+                margin: 20px;
+                padding: 25px;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+            
+            .dashboard-tabs {
+                flex-direction: column;
+            }
+            
+            .users-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .navbar {
+                padding: 10px 20px;
+            }
+            
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+            
+            .navbar-nav {
+                gap: 10px;
+            }
+        }
+        
+        /* Navigation Bar Styles */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .navbar-nav {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .nav-btn {
+            padding: 8px 20px;
+            border: 2px solid #667eea;
+            background: transparent;
+            color: #667eea;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .nav-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .nav-btn.primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .nav-btn.primary:hover {
+            background: #5a6fd8;
+        }
+        
+        /* User Card Clickable */
+        .user-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
+        }
+        
+        /* Request Modal Styles */
+        .request-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1500;
+        }
+        
+        .request-modal.active {
+            display: flex;
+        }
+        
+        .request-modal-content {
+            background: white;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+        }
+        
+        .request-modal h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .request-form-group {
+            margin-bottom: 20px;
+        }
+        
+        .request-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .request-form-group select,
+        .request-form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            resize: vertical;
+        }
+        
+        .request-form-group select:focus,
+        .request-form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .request-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .request-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .request-btn.primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .request-btn.primary:hover {
+            background: #5a6fd8;
+        }
+        
+        .request-btn.secondary {
+            background: #f8f9fa;
+            color: #666;
+            border: 2px solid #e9ecef;
+        }
+        
+        .request-btn.secondary:hover {
+            background: #e9ecef;
+        }
+        
+        .request-btn.reject-btn {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .request-btn.reject-btn:hover {
+            background: #c82333;
+        }
+        
+        /* User Profile Modal */
+        .user-profile-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .user-profile-modal.active {
+            display: flex;
+        }
+        
+        .user-profile-content {
+            background: white;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .modal-close:hover {
+            color: #333;
+        }
+        
+        /* Global Alert System */
+        .global-alert-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            max-width: 400px;
+        }
+        
+        .global-alert {
+            background: white;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-left: 4px solid;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideInRight 0.3s ease-out;
+            position: relative;
+            max-width: 100%;
+            word-wrap: break-word;
+        }
+        
+        .global-alert.success {
+            border-left-color: #00b894;
+            background: #f0fff4;
+        }
+        
+        .global-alert.error {
+            border-left-color: #e17055;
+            background: #fff5f5;
+        }
+        
+        .global-alert.info {
+            border-left-color: #667eea;
+            background: #f0f3ff;
+        }
+        
+        .global-alert-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .global-alert.success .global-alert-icon::before {
+            content: '✅';
+        }
+        
+        .global-alert.error .global-alert-icon::before {
+            content: '❌';
+        }
+        
+        .global-alert.info .global-alert-icon::before {
+            content: 'ℹ️';
+        }
+        
+        .global-alert-message {
+            flex: 1;
+            color: #333;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+        
+        .global-alert-close {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #999;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .global-alert-close:hover {
+            color: #666;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        /* Notification Badge Styles */
+        .notification-badge {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .notification-badge .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff4757;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 50%;
+            min-width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(255, 71, 87, 0.3);
+            animation: pulseNotification 2s infinite;
+        }
+        
+        .notification-badge .badge.hidden {
+            display: none;
+        }
+        
+        .notification-badge .badge.large {
+            top: -6px;
+            right: -6px;
+            min-width: 20px;
+            height: 20px;
+            font-size: 0.8rem;
+        }
+        
+        @keyframes pulseNotification {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        /* Dashboard tab notification badge */
+        .dashboard-tab .notification-badge .badge {
+            top: -5px;
+            right: -5px;
+            min-width: 16px;
+            height: 16px;
+            font-size: 0.7rem;
+            padding: 1px 4px;
+        }
+        
+        @media (max-width: 768px) {
+            .global-alert-container {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+            
+            .global-alert {
+                padding: 12px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Global Alert Container -->
+    <div id="global-alert-container" class="global-alert-container"></div>
+    
+    <!-- Navigation Bar -->
+    <nav class="navbar" id="navbar">
+        <a href="#" class="navbar-brand" onclick="handleBrandClick()">🤝 Skill Swap</a>
+        <div class="navbar-nav" id="navbar-nav">
+            <button class="nav-btn" data-action="signin">Sign In</button>
+            <button class="nav-btn primary" data-action="signup">Join Now</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Landing Page -->
+        <div id="landing-page" class="landing-page">
+            <h1 class="hero-title">🤝 Skill Swap Platform</h1>
+            <p class="hero-subtitle">Connect • Learn • Teach • Grow Together</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">🎯</span>
+                    <h3 class="feature-title">Find Learning Partners</h3>
+                    <p>Discover people who can teach you new skills while you share your expertise with others.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🔄</span>
+                    <h3 class="feature-title">Exchange Skills</h3>
+                    <p>Trade your knowledge! Teach what you know and learn what you want in a fair exchange.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🌟</span>
+                    <h3 class="feature-title">Build Community</h3>
+                    <p>Join a growing community of learners and teachers helping each other grow and succeed.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">💡</span>
+                    <h3 class="feature-title">Flexible Learning</h3>
+                    <p>Learn at your own pace with flexible scheduling that fits your lifestyle and availability.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Authentication Section -->
+        <div id="auth-section" class="auth-section">
+            <div class="auth-container">
+                <div class="close-btn" onclick="closeAuthSection()">&times;</div>
+                <div class="tab-buttons">
+                <button class="tab-button active" onclick="showTab('login')">Sign In</button>
+                <button class="tab-button" onclick="showTab('register')">Join Now</button>
+            </div>
+            
+            <div id="alert-container"></div>
+            
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form">
+                <div class="form-group">
+                    <label for="login-email">Email Address</label>
+                    <input type="email" id="login-email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="submit-btn">Sign In</button>
+            </form>
+            
+            <!-- Register Form -->
+            <form id="register-form" class="auth-form hidden">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="register-name">Full Name</label>
+                        <input type="text" id="register-name" placeholder="Your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Email</label>
+                        <input type="email" id="register-email" placeholder="your@email.com" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="register-password">Password</label>
+                        <input type="password" id="register-password" placeholder="Create password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-availability">When are you available?</label>
+                        <select id="register-availability">
+                            <option value="Weekdays">Weekdays</option>
+                            <option value="Weekends">Weekends</option>
+                            <option value="Evenings">Evenings</option>
+                            <option value="Flexible">Flexible</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="register-location">Location (Optional)</label>
+                    <input type="text" id="register-location" placeholder="City, Country">
+                </div>
+                <div class="form-group">
+                    <label>Skills You Can Teach 🎯</label>
+                    <div class="skills-input">
+                        <input type="text" id="skill-offered-input" placeholder="What can you teach? (e.g., Python, Guitar, Spanish)">
+                        <button type="button" class="add-skill-btn" onclick="addSkill('offered')">Add</button>
+                    </div>
+                    <div id="skills-offered-list" class="skills-list"></div>
+                </div>
+                <div class="form-group">
+                    <label>Skills You Want to Learn 📚</label>
+                    <div class="skills-input">
+                        <input type="text" id="skill-wanted-input" placeholder="What do you want to learn? (e.g., Web Design, Cooking)">
+                        <button type="button" class="add-skill-btn" onclick="addSkill('wanted')">Add</button>
+                    </div>
+                    <div id="skills-wanted-list" class="skills-list"></div>
+                </div>
+                <button type="submit" class="submit-btn">Join Skill Swap</button>
+            </form>
+            </div>
+        </div>
+        
+        <!-- Dashboard -->
+        <div id="dashboard" class="dashboard">
+            <div class="container">
+                <div class="dashboard-header">
+                    <div class="user-info">
+                        <div class="user-avatar" id="user-avatar">U</div>
+                        <div>
+                            <h2 id="user-name">Welcome back!</h2>
+                            <p id="user-stats">Ready to swap some skills?</p>
+                        </div>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">Sign Out</button>
+                </div>
+            
+            <div class="dashboard-tabs">
+                <button class="dashboard-tab active" onclick="showDashboardTab('browse')">Browse People</button>
+                <button class="dashboard-tab notification-badge" onclick="showDashboardTab('requests')">
+                    My Requests
+                    <span id="requests-badge" class="badge hidden">0</span>
+                </button>
+                <button class="dashboard-tab" onclick="showDashboardTab('profile')">My Profile</button>
+            </div>
+            
+            <!-- Browse Users Tab -->
+            <div id="browse-tab" class="dashboard-content">
+                <input type="text" class="search-bar" id="search-users" placeholder="🔍 Search by name or skills...">
+                
+                <div class="filter-tabs">
+                    <button class="filter-btn active" onclick="filterUsers('all')">All Users</button>
+                    <button class="filter-btn" onclick="filterUsers('can-teach')">Can Teach Me</button>
+                    <button class="filter-btn" onclick="filterUsers('want-to-learn')">Want My Skills</button>
+                </div>
+                
+                <div id="users-container" class="users-grid">
+                    <div class="no-users">
+                        <h3>🔍 Finding awesome people for you...</h3>
+                        <p>Loading skill swap community members</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Requests Tab -->
+            <div id="requests-tab" class="dashboard-content hidden">
+                <h3>Your Skill Swap Requests</h3>
+                
+                <div class="filter-tabs">
+                    <button class="filter-btn active" onclick="filterRequests('sent')">Sent Requests</button>
+                    <button class="filter-btn" onclick="filterRequests('received')">Received Requests</button>
+                </div>
+                
+                <div id="requests-container">
+                    <div class="loading-message">
+                        <p>Loading your requests...</p>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <!-- Profile Tab -->
+            <div id="profile-tab" class="dashboard-content hidden">
+                <h3>Manage Your Profile</h3>
+                
+                <!-- Profile Update Form -->
+                <div class="profile-section">
+                    <h4>📝 Basic Information</h4>
+                    <form id="profile-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="profile-name">Full Name</label>
+                                <input type="text" id="profile-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="profile-location">Location</label>
+                                <input type="text" id="profile-location" placeholder="City, Country">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-availability">Availability</label>
+                            <select id="profile-availability">
+                                <option value="Weekdays">Weekdays</option>
+                                <option value="Weekends">Weekends</option>
+                                <option value="Evenings">Evenings</option>
+                                <option value="Flexible">Flexible</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="submit-btn">Update Profile</button>
+                    </form>
+                </div>
+                
+                <!-- Skills Management -->
+                <div class="profile-section">
+                    <h4>🎯 Skills You Can Teach</h4>
+                    <div class="skills-input">
+                        <input type="text" id="profile-skill-offered-input" placeholder="Add a skill you can teach...">
+                        <button type="button" class="add-skill-btn" onclick="addProfileSkill('offered')">Add</button>
+                    </div>
+                    <div id="profile-skills-offered-list" class="skills-list"></div>
+                    
+                    <h4 style="margin-top: 30px;">📚 Skills You Want to Learn</h4>
+                    <div class="skills-input">
+                        <input type="text" id="profile-skill-wanted-input" placeholder="Add a skill you want to learn...">
+                        <button type="button" class="add-skill-btn" onclick="addProfileSkill('wanted')">Add</button>
+                    </div>
+                    <div id="profile-skills-wanted-list" class="skills-list"></div>
+                    
+                    <button class="submit-btn" onclick="updateSkills()" style="margin-top: 20px;">Save Skills</button>
+                </div>
+                
+                <!-- Password Change -->
+                <div class="profile-section">
+                    <h4>🔒 Change Password</h4>
+                    <form id="password-form">
+                        <div class="form-group">
+                            <label for="current-password">Current Password</label>
+                            <input type="password" id="current-password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-password">New Password</label>
+                            <input type="password" id="new-password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm-password">Confirm New Password</label>
+                            <input type="password" id="confirm-password" required>
+                        </div>
+                        <button type="submit" class="submit-btn">Change Password</button>
+                    </form>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Send Request Modal -->
+    <div id="send-request-modal" class="request-modal">
+        <div class="request-modal-content">
+            <button class="modal-close" onclick="closeSendRequestModal()">&times;</button>
+            <h3>🤝 Send Skill Swap Request</h3>
+            <div id="send-request-info" class="request-info"></div>
+            
+            <div class="request-form-group">
+                <label for="request-skill-offered">What skill will you offer?</label>
+                <select id="request-skill-offered" required>
+                    <option value="">Select a skill you can teach...</option>
+                </select>
+            </div>
+            
+            <div class="request-form-group">
+                <label for="request-skill-wanted">What skill do you want to learn?</label>
+                <select id="request-skill-wanted" required>
+                    <option value="">Select a skill you want to learn...</option>
+                </select>
+            </div>
+            
+            <div class="request-form-group">
+                <label for="request-message">Your message (optional)</label>
+                <textarea id="request-message" rows="4" 
+                    placeholder="Hi! I'd love to learn [skill] from you in exchange for teaching [skill]. When would be a good time to connect?"></textarea>
+            </div>
+            
+            <div class="request-buttons">
+                <button class="request-btn secondary" onclick="closeSendRequestModal()">Cancel</button>
+                <button class="request-btn primary" onclick="submitSwapRequest()">Send Request</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Respond to Request Modal -->
+    <div id="respond-request-modal" class="request-modal">
+        <div class="request-modal-content">
+            <button class="modal-close" onclick="closeRespondRequestModal()">&times;</button>
+            <h3 id="respond-modal-title">📝 Respond to Request</h3>
+            <div id="respond-request-info" class="request-info"></div>
+            
+            <div class="request-form-group">
+                <label for="response-message">Your message (optional)</label>
+                <textarea id="response-message" rows="4" 
+                    placeholder="Thanks for reaching out! I'd be happy to help you learn this skill..."></textarea>
+            </div>
+            
+            <div class="request-buttons">
+                <button class="request-btn secondary" onclick="closeRespondRequestModal()">Cancel</button>
+                <button id="respond-action-btn" class="request-btn primary">Accept Request</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://127.0.0.1:5000';
+        let authToken = localStorage.getItem('authToken');
+        let currentUser = null;
+        let allUsers = [];
+        let skillsOffered = [];
+        let skillsWanted = [];
+        let profileSkillsOffered = [];
+        let profileSkillsWanted = [];
+        let notificationCounts = {
+            pendingRequests: 0,
+            totalUnread: 0
+        };
+        
+        // Filter state variables
+        let currentFilterType = 'all';
+        
+        // Modal state variables
+        let currentRequestReceiverId = null;
+        let currentResponseRequestId = null;
+        let currentResponseAction = null;
+        let modalJustOpened = false; // Flag to prevent immediate closure
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            if (authToken) {
+                checkAuthAndShowDashboard();
+            } else {
+                showLandingPage();
+            }
+            setupEventListeners();
+            
+            // Set up periodic notification refresh (every 30 seconds)
+            setInterval(() => {
+                if (authToken && currentUser) {
+                    refreshNotifications();
+                }
+            }, 30000);
+        });
+        
+        function setupEventListeners() {
+            // Event delegation for dynamically created nav buttons
+            document.addEventListener('click', function(e) {
+                if (e.target.matches('button[data-action="signin"]') || 
+                    (e.target.matches('.nav-btn:not(.primary)') && e.target.textContent.includes('Sign In'))) {
+                    e.preventDefault();
+                    console.log('Sign In button clicked');
+                    showAuthSection('login');
+                }
+                
+                if (e.target.matches('button[data-action="signup"]') || 
+                    (e.target.matches('.nav-btn.primary') && e.target.textContent.includes('Join Now')) ||
+                    (e.target.matches('.cta-btn.primary') && (e.target.textContent.includes('Get Started') || e.target.textContent.includes('Join SkillSwap')))) {
+                    e.preventDefault();
+                    console.log('Join Now button clicked');
+                    showAuthSection('register');
+                }
+                
+                if (e.target.matches('button[data-action="logout"]')) {
+                    e.preventDefault();
+                    logout();
+                }
+            });
+            
+            // Navigation button event listeners for static buttons
+            const signInButtons = document.querySelectorAll('.nav-btn:not(.primary)');
+            const joinNowButtons = document.querySelectorAll('.nav-btn.primary, .cta-btn.primary');
+            
+            signInButtons.forEach(btn => {
+                if (btn.textContent.includes('Sign In')) {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        console.log('Sign In button clicked (static)');
+                        showAuthSection('login');
+                    });
+                }
+            });
+            
+            joinNowButtons.forEach(btn => {
+                if (btn.textContent.includes('Join Now') || btn.textContent.includes('Get Started') || btn.textContent.includes('Join SkillSwap')) {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        console.log('Join Now button clicked (static)');
+                        showAuthSection('register');
+                    });
+                }
+            });
+            
+            // Search functionality
+            document.getElementById('search-users')?.addEventListener('input', function() {
+                filterUsersDisplay();
+            });
+            
+            // Skill input enter key
+            ['skill-offered-input', 'skill-wanted-input'].forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const type = id.includes('offered') ? 'offered' : 'wanted';
+                            addSkill(type);
+                        }
+                    });
+                }
+            });
+            
+            // Profile skill input enter key
+            ['profile-skill-offered-input', 'profile-skill-wanted-input'].forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const type = id.includes('offered') ? 'offered' : 'wanted';
+                            addProfileSkill(type);
+                        }
+                    });
+                }
+            });
+        }
+        
+        async function checkAuthAndShowDashboard() {
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/profile`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        currentUser = data.data.user;
+                        console.log('Profile loaded on page init:', currentUser);
+                        console.log('User skills offered:', currentUser.skillsOffered);
+                        console.log('User skills wanted:', currentUser.skillsWanted);
+                        showDashboard();
+                        await loadUsers();
+                    } else {
+                        localStorage.removeItem('authToken');
+                        authToken = null;
+                        showLandingPage();
+                    }
+                } else {
+                    localStorage.removeItem('authToken');
+                    authToken = null;
+                    showLandingPage();
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                localStorage.removeItem('authToken');
+                authToken = null;
+                showLandingPage();
+            }
+        }
+        
+        function showLandingPage() {
+            document.getElementById('landing-page').style.display = 'block';
+            document.getElementById('auth-section').classList.remove('active');
+            document.getElementById('dashboard').classList.remove('active');
+            
+            // Update navbar
+            updateNavbar(false);
+        }
+        
+        function handleBrandClick() {
+            // If user is logged in, stay on dashboard or go to browse tab
+            if (authToken && currentUser) {
+                // If already on dashboard, go to browse tab, otherwise show dashboard
+                const dashboard = document.getElementById('dashboard');
+                if (dashboard.classList.contains('active')) {
+                    showDashboardTab('browse');
+                } else {
+                    showDashboard();
+                }
+            } else {
+                // If not logged in, show landing page
+                showLandingPage();
+            }
+        }
+        
+        function showAuthSection(defaultTab = 'login') {
+            console.log('showAuthSection called with:', defaultTab);
+            
+            document.getElementById('landing-page').style.display = 'none';
+            document.getElementById('auth-section').classList.add('active');
+            document.getElementById('dashboard').classList.remove('active');
+            
+            // Set the default tab
+            if (defaultTab === 'register') {
+                showTab('register');
+            } else {
+                showTab('login');
+            }
+            
+            // Update navbar
+            updateNavbar(false);
+        }
+        
+        function closeAuthSection() {
+            document.getElementById('auth-section').classList.remove('active');
+            showLandingPage();
+        }
+        
+        // Close modal when clicking outside
+        document.addEventListener('click', function(event) {
+            const authSection = document.getElementById('auth-section');
+            const authContainer = document.querySelector('.auth-container');
+            if (authSection.classList.contains('active') && 
+                !authContainer.contains(event.target)) {
+                closeAuthSection();
+            }
+            
+            // Close send request modal when clicking outside
+            const sendRequestModal = document.getElementById('send-request-modal');
+            const sendRequestContent = sendRequestModal?.querySelector('.request-modal-content');
+            if (sendRequestModal?.classList.contains('active') && 
+                !sendRequestContent?.contains(event.target)) {
+                closeSendRequestModal();
+            }
+            
+            // Close respond request modal when clicking outside
+            const respondRequestModal = document.getElementById('respond-request-modal');
+            const respondRequestContent = respondRequestModal?.querySelector('.request-modal-content');
+            if (respondRequestModal?.classList.contains('active') && !modalJustOpened) {
+                console.log('Response modal is active, checking if click is outside');
+                console.log('Click target:', event.target);
+                console.log('Modal content element:', respondRequestContent);
+                
+                if (!respondRequestContent?.contains(event.target)) {
+                    console.log('Click was outside modal content, closing modal');
+                    closeRespondRequestModal();
+                } else {
+                    console.log('Click was inside modal content, keeping modal open');
+                }
+            } else if (modalJustOpened) {
+                console.log('Modal just opened, ignoring this click event');
+                modalJustOpened = false; // Reset the flag
+            }
+        });
+        
+        function showDashboard() {
+            document.getElementById('landing-page').style.display = 'none';
+            document.getElementById('auth-section').classList.remove('active');
+            document.getElementById('dashboard').classList.add('active');
+            
+            if (currentUser) {
+                document.getElementById('user-name').textContent = `Welcome back, ${currentUser.name}!`;
+                document.getElementById('user-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
+                console.log('Current user in dashboard:', currentUser);
+                console.log('Skills offered:', currentUser.skillsOffered);
+                console.log('Skills wanted:', currentUser.skillsWanted);
+                console.log('Skills offered length:', currentUser.skillsOffered?.length);
+                console.log('Skills wanted length:', currentUser.skillsWanted?.length);
+                document.getElementById('user-stats').textContent = `${currentUser.skillsOffered?.length || 0} skills to teach • ${currentUser.skillsWanted?.length || 0} skills to learn`;
+                
+                // Load notifications when dashboard is shown
+                loadNotificationCounts();
+            } else {
+                console.log('No current user found in showDashboard');
+            }
+            
+            // Update navbar for logged in user
+            updateNavbar(true);
+        }
+        
+        function updateNavbar(isLoggedIn) {
+            const navbarNav = document.getElementById('navbar-nav');
+            
+            if (isLoggedIn && currentUser) {
+                navbarNav.innerHTML = `
+                    <span style="color: #667eea; font-weight: 600;">Hello, ${currentUser.name}!</span>
+                    <button class="nav-btn" data-action="logout">Sign Out</button>
+                `;
+                
+                // Load notification counts
+                loadNotificationCounts();
+            } else {
+                navbarNav.innerHTML = `
+                    <button class="nav-btn" data-action="signin">Sign In</button>
+                    <button class="nav-btn primary" data-action="signup">Join Now</button>
+                `;
+            }
+        }
+        
+        async function loadNotificationCounts() {
+            try {
+                const response = await fetch(`${API_BASE}/api/swap-requests/received`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.data) {
+                        // Count pending requests
+                        const pendingRequests = data.data.filter(request => request.status === 'pending');
+                        notificationCounts.pendingRequests = pendingRequests.length;
+                        notificationCounts.totalUnread = pendingRequests.length;
+                        
+                        console.log('Notification counts loaded:', notificationCounts);
+                        updateNotificationBadges();
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load notification counts:', error);
+            }
+        }
+        
+        function updateNotificationBadges() {
+            const requestsBadge = document.getElementById('requests-badge');
+            
+            // Update requests tab badge
+            if (requestsBadge) {
+                if (notificationCounts.pendingRequests > 0) {
+                    requestsBadge.textContent = notificationCounts.pendingRequests;
+                    requestsBadge.classList.remove('hidden');
+                } else {
+                    requestsBadge.classList.add('hidden');
+                }
+            }
+            
+            console.log('Notification badge updated:', {
+                requests: notificationCounts.pendingRequests
+            });
+        }
+        
+        function refreshNotifications() {
+            if (authToken && currentUser) {
+                loadNotificationCounts();
+            }
+        }
+        
+        function showAlert(message, type = 'success') {
+            const alertContainer = document.getElementById('global-alert-container');
+            
+            // Create alert element
+            const alertId = 'alert-' + Date.now();
+            const alertElement = document.createElement('div');
+            alertElement.id = alertId;
+            alertElement.className = `global-alert ${type}`;
+            alertElement.innerHTML = `
+                <div class="global-alert-icon"></div>
+                <div class="global-alert-message">${message}</div>
+                <button class="global-alert-close" onclick="closeAlert('${alertId}')">&times;</button>
+            `;
+            
+            // Add to container
+            alertContainer.appendChild(alertElement);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                closeAlert(alertId);
+            }, 5000);
+            
+            // Also show in auth container if it exists (for backwards compatibility)
+            const authAlertContainer = document.getElementById('alert-container');
+            if (authAlertContainer) {
+                authAlertContainer.innerHTML = `<div class="alert ${type}">${message}</div>`;
+                setTimeout(() => {
+                    authAlertContainer.innerHTML = '';
+                }, 5000);
+            }
+        }
+        
+        function closeAlert(alertId) {
+            const alertElement = document.getElementById(alertId);
+            if (alertElement) {
+                alertElement.style.animation = 'slideOutRight 0.3s ease-in';
+                setTimeout(() => {
+                    if (alertElement.parentNode) {
+                        alertElement.parentNode.removeChild(alertElement);
+                    }
+                }, 300);
+            }
+        }
+        
+        function showTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            
+            // Find and activate the correct button
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(btn => {
+                if ((tab === 'login' && btn.textContent.includes('Sign In')) ||
+                    (tab === 'register' && btn.textContent.includes('Join Now'))) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Show/hide forms
+            document.getElementById('login-form').classList.toggle('hidden', tab !== 'login');
+            document.getElementById('register-form').classList.toggle('hidden', tab !== 'register');
+        }
+        
+        function showDashboardTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.dashboard-tab').forEach(btn => btn.classList.remove('active'));
+            
+            // Handle both event-based and direct calls
+            if (event && event.target) {
+                event.target.classList.add('active');
+            } else {
+                // Find the correct tab button when called directly
+                document.querySelectorAll('.dashboard-tab').forEach(btn => {
+                    if ((tab === 'browse' && btn.textContent.includes('Browse People')) ||
+                        (tab === 'requests' && btn.textContent.includes('My Requests')) ||
+                        (tab === 'profile' && btn.textContent.includes('My Profile'))) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+            
+            // Show/hide content
+            document.querySelectorAll('.dashboard-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(`${tab}-tab`).classList.remove('hidden');
+            
+            if (tab === 'browse' && allUsers.length === 0) {
+                loadUsers();
+            }
+            
+            // Load profile data when profile tab is shown
+            if (tab === 'profile') {
+                loadProfileData();
+            }
+            
+            // Load requests when requests tab is shown and refresh notifications
+            if (tab === 'requests') {
+                loadRequests('sent');
+                // Refresh notification counts when viewing requests
+                setTimeout(() => {
+                    refreshNotifications();
+                }, 500);
+            }
+        }
+        
+        function addSkill(type) {
+            const input = document.getElementById(`skill-${type}-input`);
+            const skill = input.value.trim();
+            
+            if (!skill) return;
+            
+            if (type === 'offered') {
+                if (!skillsOffered.includes(skill)) {
+                    skillsOffered.push(skill);
+                    updateSkillsList('offered');
+                }
+            } else {
+                if (!skillsWanted.includes(skill)) {
+                    skillsWanted.push(skill);
+                    updateSkillsList('wanted');
+                }
+            }
+            
+            input.value = '';
+        }
+        
+        function removeSkill(type, skill) {
+            if (type === 'offered') {
+                skillsOffered = skillsOffered.filter(s => s !== skill);
+                updateSkillsList('offered');
+            } else {
+                skillsWanted = skillsWanted.filter(s => s !== skill);
+                updateSkillsList('wanted');
+            }
+        }
+        
+        function updateSkillsList(type) {
+            const container = document.getElementById(`skills-${type}-list`);
+            const skills = type === 'offered' ? skillsOffered : skillsWanted;
+            
+            if (skills.length === 0) {
+                container.innerHTML = '<p style="color: #666; font-style: italic; margin: 10px 0;">No skills added yet</p>';
+            } else {
+                container.innerHTML = skills.map(skill => 
+                    `<div class="skill-tag">
+                        ${skill}
+                        <span class="remove" onclick="removeSkill('${type}', '${skill}')">&times;</span>
+                    </div>`
+                ).join('');
+            }
+        }
+        
+        async function loadUsers() {
+            try {
+                const response = await fetch(`${API_BASE}/api/users`, {
+                    headers: authToken ? {
+                        'Authorization': `Bearer ${authToken}`
+                    } : {}
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    allUsers = data.data || [];
+                    displayUsers(allUsers);
+                } else {
+                    document.getElementById('users-container').innerHTML = 
+                        '<div class="no-users"><h3>❌ Unable to load users</h3><p>Please try refreshing the page</p></div>';
+                }
+            } catch (error) {
+                console.error('Failed to load users:', error);
+                document.getElementById('users-container').innerHTML = 
+                    '<div class="no-users"><h3>❌ Connection error</h3><p>Please check your internet connection</p></div>';
+            }
+        }
+        
+        function displayUsers(users) {
+            const container = document.getElementById('users-container');
+            
+            if (!users || users.length === 0) {
+                container.innerHTML = '<div class="no-users"><h3>👥 No users found</h3><p>Be the first to join the community!</p></div>';
+                return;
+            }
+            
+            // Filter out current user
+            const filteredUsers = users.filter(user => user.id !== currentUser?.id);
+            
+            if (filteredUsers.length === 0) {
+                container.innerHTML = '<div class="no-users"><h3>🎉 You\'re the first member!</h3><p>Invite friends to start skill swapping</p></div>';
+                return;
+            }
+            
+            container.innerHTML = filteredUsers.map(user => `
+                <div class="user-card" onclick="showUserProfile(${user.id})" data-user-id="${user.id}">
+                    <div class="user-card-header">
+                        <div class="user-card-avatar">${user.name.charAt(0).toUpperCase()}</div>
+                        <div>
+                            <h3>${user.name}</h3>
+                            <p style="color: #666; font-size: 0.9rem;">${user.location || 'Location not specified'}</p>
+                            <p style="color: #667eea; font-size: 0.8rem;">Available: ${user.availability || 'Flexible'}</p>
+                        </div>
+                    </div>
+                    <div class="skills-section">
+                        <h4>🎯 Can Teach:</h4>
+                        <div class="skills-tags">
+                            ${(user.skillsOffered || []).map(skill => `<span class="skill-tag">${skill}</span>`).join('') || '<span style="color: #999; font-style: italic;">No skills listed</span>'}
+                        </div>
+                    </div>
+                    <div class="skills-section">
+                        <h4>📚 Wants to Learn:</h4>
+                        <div class="skills-tags">
+                            ${(user.skillsWanted || []).map(skill => `<span class="skill-tag wanted">${skill}</span>`).join('') || '<span style="color: #999; font-style: italic;">No skills listed</span>'}
+                        </div>
+                    </div>
+                    <button class="connect-btn" onclick="event.stopPropagation(); connectWithUser(${user.id}, '${user.name.replace(/'/g, "\\'")}')">
+                        💬 Connect & Swap Skills
+                    </button>
+                </div>
+            `).join('');
+        }
+        
+        function showUserProfile(userId) {
+            const user = allUsers.find(u => u.id === userId);
+            if (!user) return;
+            
+            // Create modal if it doesn't exist
+            let modal = document.getElementById('user-profile-modal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'user-profile-modal';
+                modal.className = 'user-profile-modal';
+                document.body.appendChild(modal);
+                
+                // Close modal when clicking outside
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        closeUserProfile();
+                    }
+                });
+            }
+            
+            modal.innerHTML = `
+                <div class="user-profile-content">
+                    <button class="modal-close" onclick="closeUserProfile()">&times;</button>
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <div class="user-card-avatar" style="width: 80px; height: 80px; font-size: 2rem; margin: 0 auto 15px;">${user.name.charAt(0).toUpperCase()}</div>
+                        <h2>${user.name}</h2>
+                        <p style="color: #666; margin: 5px 0;">${user.location || 'Location not specified'}</p>
+                        <p style="color: #667eea; font-weight: 600;">Available: ${user.availability || 'Flexible'}</p>
+                    </div>
+                    
+                    <div style="margin-bottom: 25px;">
+                        <h4 style="color: #667eea; margin-bottom: 15px;">🎯 Skills ${user.name} Can Teach:</h4>
+                        <div class="skills-tags">
+                            ${(user.skillsOffered || []).map(skill => `<span class="skill-tag">${skill}</span>`).join('') || '<span style="color: #999; font-style: italic;">No skills listed yet</span>'}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <h4 style="color: #667eea; margin-bottom: 15px;">📚 Skills ${user.name} Wants to Learn:</h4>
+                        <div class="skills-tags">
+                            ${(user.skillsWanted || []).map(skill => `<span class="skill-tag wanted">${skill}</span>`).join('') || '<span style="color: #999; font-style: italic;">No skills listed yet</span>'}
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button class="connect-btn" onclick="connectWithUser(${user.id}, '${user.name.replace(/'/g, "\\'")}'); closeUserProfile();" style="width: 100%; padding: 15px; font-size: 1.1rem;">
+                            💬 Connect & Swap Skills with ${user.name}
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            modal.classList.add('active');
+        }
+        
+        function closeUserProfile() {
+            const modal = document.getElementById('user-profile-modal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+        
+        function filterUsers(type) {
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Store current filter type
+            currentFilterType = type;
+            
+            // Apply combined filtering
+            applyFilters();
+        }
+        
+        function filterUsersDisplay() {
+            // Apply combined filtering
+            applyFilters();
+        }
+        
+        function applyFilters() {
+            const searchTerm = document.getElementById('search-users').value.toLowerCase();
+            let filteredUsers = [...allUsers];
+            
+            // Apply category filter first
+            if (currentUser && currentFilterType !== 'all') {
+                if (currentFilterType === 'can-teach') {
+                    // Users who can teach skills I want to learn (case-insensitive)
+                    filteredUsers = allUsers.filter(user => 
+                        user.skillsOffered?.some(skill => 
+                            currentUser.skillsWanted?.some(wantedSkill => 
+                                skill.toLowerCase() === wantedSkill.toLowerCase()
+                            )
+                        )
+                    );
+                } else if (currentFilterType === 'want-to-learn') {
+                    // Users who want to learn skills I can teach (case-insensitive)
+                    filteredUsers = allUsers.filter(user => 
+                        user.skillsWanted?.some(skill => 
+                            currentUser.skillsOffered?.some(offeredSkill => 
+                                skill.toLowerCase() === offeredSkill.toLowerCase()
+                            )
+                        )
+                    );
+                }
+            }
+            
+            // Apply search filter on the category-filtered results
+            if (searchTerm) {
+                filteredUsers = filteredUsers.filter(user => 
+                    user.name.toLowerCase().includes(searchTerm) ||
+                    user.skillsOffered?.some(skill => skill.toLowerCase().includes(searchTerm)) ||
+                    user.skillsWanted?.some(skill => skill.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            displayUsers(filteredUsers);
+        }
+        
+        async function connectWithUser(userId, userName) {
+            if (!currentUser) {
+                showAlert('Please sign in to connect with users', 'error');
+                return;
+            }
+            
+            // Find the user to get their skills
+            const targetUser = allUsers.find(u => u.id === userId);
+            if (!targetUser) {
+                showAlert('User not found', 'error');
+                return;
+            }
+            
+            // Open the send request modal
+            openSendRequestModal(userId, userName, targetUser);
+        }
+        
+        function openSendRequestModal(userId, userName, targetUser) {
+            currentRequestReceiverId = userId;
+            
+            // Update modal info
+            document.getElementById('send-request-info').innerHTML = `
+                <div style="background: #f0f3ff; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <strong>Sending request to:</strong> ${userName}<br>
+                    <strong>Their skills:</strong> ${targetUser.skillsOffered?.join(', ') || 'None listed'}<br>
+                    <strong>They want to learn:</strong> ${targetUser.skillsWanted?.join(', ') || 'None listed'}
+                </div>
+            `;
+            
+            // Populate skill dropdowns
+            const skillOfferedSelect = document.getElementById('request-skill-offered');
+            const skillWantedSelect = document.getElementById('request-skill-wanted');
+            
+            // Clear previous options
+            skillOfferedSelect.innerHTML = '<option value="">Select a skill you can teach...</option>';
+            skillWantedSelect.innerHTML = '<option value="">Select a skill you want to learn...</option>';
+            
+            // Add user's offered skills
+            if (currentUser.skillsOffered && currentUser.skillsOffered.length > 0) {
+                currentUser.skillsOffered.forEach(skill => {
+                    const option = document.createElement('option');
+                    option.value = skill;
+                    option.textContent = skill;
+                    skillOfferedSelect.appendChild(option);
+                });
+            }
+            
+            // Add target user's offered skills as things current user can want to learn
+            if (targetUser.skillsOffered && targetUser.skillsOffered.length > 0) {
+                targetUser.skillsOffered.forEach(skill => {
+                    const option = document.createElement('option');
+                    option.value = skill;
+                    option.textContent = skill;
+                    skillWantedSelect.appendChild(option);
+                });
+            }
+            
+            // Clear message
+            document.getElementById('request-message').value = '';
+            
+            // Show modal
+            document.getElementById('send-request-modal').classList.add('active');
+        }
+        
+        function closeSendRequestModal() {
+            document.getElementById('send-request-modal').classList.remove('active');
+            currentRequestReceiverId = null;
+        }
+        
+        async function submitSwapRequest() {
+            const skillOffered = document.getElementById('request-skill-offered').value;
+            const skillWanted = document.getElementById('request-skill-wanted').value;
+            const message = document.getElementById('request-message').value.trim();
+            
+            if (!skillOffered || !skillWanted) {
+                showAlert('Please select both skills for the exchange', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/swap-requests`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        receiverId: currentRequestReceiverId,
+                        skillOffered: skillOffered,
+                        skillWanted: skillWanted,
+                        message: message
+                    })
+                });
+                
+                if (response.ok) {
+                    showAlert('Skill swap request sent successfully! 🎉', 'success');
+                    closeSendRequestModal();
+                    refreshNotifications();
+                } else {
+                    const error = await response.json();
+                    showAlert(error.message || 'Failed to send request', 'error');
+                }
+            } catch (error) {
+                console.error('Request submission failed:', error);
+                showAlert('Failed to send request. Please try again.', 'error');
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('authToken');
+            authToken = null;
+            currentUser = null;
+            allUsers = [];
+            skillsOffered = [];
+            skillsWanted = [];
+            showLandingPage();
+            showAlert('You have been signed out successfully', 'success');
+        }
+        
+        // Swap Request Management Functions
+        
+        async function loadRequests(type = 'sent') {
+            try {
+                const endpoint = type === 'sent' ? '/my-requests' : '/received';
+                const response = await fetch(`${API_BASE}/api/swap-requests${endpoint}`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    displayRequests(data.data || [], type);
+                } else {
+                    document.getElementById('requests-container').innerHTML = 
+                        '<div class="no-requests"><h3>❌ Unable to load requests</h3><p>Please try refreshing the page</p></div>';
+                }
+            } catch (error) {
+                console.error('Failed to load requests:', error);
+                document.getElementById('requests-container').innerHTML = 
+                    '<div class="no-requests"><h3>❌ Connection error</h3><p>Please check your internet connection</p></div>';
+            }
+        }
+        
+        function filterRequests(type) {
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            loadRequests(type);
+        }
+        
+        function displayRequests(requests, type) {
+            const container = document.getElementById('requests-container');
+            
+            if (!requests || requests.length === 0) {
+                const noRequestsMessage = type === 'sent' 
+                    ? "You haven't sent any requests yet. Browse users and connect with someone!"
+                    : "You haven't received any requests yet. Update your profile to attract more connections!";
+                
+                container.innerHTML = `<div class="no-requests"><h3>📭 No ${type} requests</h3><p>${noRequestsMessage}</p></div>`;
+                return;
+            }
+            
+            container.innerHTML = requests.map(request => {
+                const isReceived = type === 'received';
+                const otherUser = isReceived ? request.requester : request.receiver;
+                const statusClass = getStatusClass(request.status);
+                const statusEmoji = getStatusEmoji(request.status);
+                
+                return `
+                    <div class="request-card ${statusClass}">
+                        <div class="request-header">
+                            <div class="user-info">
+                                <div class="user-avatar">${otherUser.name.charAt(0).toUpperCase()}</div>
+                                <div>
+                                    <h4>${otherUser.name}</h4>
+                                    <p class="request-type">${isReceived ? 'Wants to connect with you' : 'You requested to connect'}</p>
+                                </div>
+                            </div>
+                            <div class="request-status">
+                                <span class="status-badge ${statusClass}">${statusEmoji} ${request.status.charAt(0).toUpperCase() + request.status.slice(1)}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="request-skills">
+                            <div class="skill-exchange">
+                                <div class="skill-offer">
+                                    <strong>Offering:</strong> ${request.skill_offered}
+                                </div>
+                                <div class="skill-want">
+                                    <strong>Wanting:</strong> ${request.skill_wanted}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        ${request.message ? `<div class="request-message"><p><strong>Request message:</strong> "${request.message}"</p></div>` : ''}
+                        ${request.acceptance_message ? `<div class="request-message" style="background: #f0fff4; border-left-color: #28a745;"><p><strong>Response message:</strong> "${request.acceptance_message}"</p></div>` : ''}
+                        
+                        <div class="request-actions">
+                            ${getRequestActions(request, isReceived)}
+                        </div>
+                        
+                        <div class="request-date">
+                            <small>Created: ${new Date(request.created_at).toLocaleDateString()}</small>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function getStatusClass(status) {
+            switch (status) {
+                case 'pending': return 'status-pending';
+                case 'accepted': return 'status-accepted';
+                case 'rejected': return 'status-rejected';
+                case 'completed': return 'status-completed';
+                default: return 'status-pending';
+            }
+        }
+        
+        function getStatusEmoji(status) {
+            switch (status) {
+                case 'pending': return '⏳';
+                case 'accepted': return '✅';
+                case 'rejected': return '❌';
+                case 'completed': return '🎉';
+                default: return '⏳';
+            }
+        }
+        
+        function getRequestActions(request, isReceived) {
+            if (request.status === 'pending') {
+                if (isReceived) {
+                    return `
+                        <button class="action-btn accept-btn" onclick="openResponseModal(${request.id}, 'accepted', '${request.requester.name.replace(/'/g, "\\'")}', '${request.skill_offered}', '${request.skill_wanted}')">Accept</button>
+                        <button class="action-btn reject-btn" onclick="openResponseModal(${request.id}, 'rejected', '${request.requester.name.replace(/'/g, "\\'")}', '${request.skill_offered}', '${request.skill_wanted}')">Decline</button>
+                    `;
+                } else {
+                    return `<button class="action-btn cancel-btn" onclick="cancelRequest(${request.id})">Cancel Request</button>`;
+                }
+            } else if (request.status === 'accepted') {
+                // Only show "Mark as Completed" button for requests that the current user sent (not received)
+                if (!isReceived) {
+                    return `<button class="action-btn complete-btn" onclick="markCompleted(${request.id})">Mark as Completed</button>`;
+                }
+                // For received accepted requests, show no action buttons
+                return '';
+            }
+            return '';
+        }
+        
+        function openResponseModal(requestId, action, requesterName, skillOffered, skillWanted) {
+            console.log('=== OPENING RESPONSE MODAL ===');
+            console.log('openResponseModal called with:', { requestId, action, requesterName, skillOffered, skillWanted });
+            
+            currentResponseRequestId = requestId;
+            currentResponseAction = action;
+            
+            const isAccepting = action === 'accepted';
+            const title = isAccepting ? '✅ Accept Request' : '❌ Decline Request';
+            const actionText = isAccepting ? 'Accept Request' : 'Decline Request';
+            const placeholderText = isAccepting 
+                ? 'Great! I\'d be happy to help you learn this skill. When would be a good time to start?'
+                : 'Thank you for reaching out, but I\'m not available for this exchange at the moment.';
+            
+            console.log('Modal data prepared:', { title, actionText, placeholderText });
+            
+            // Check if modal exists
+            const modal = document.getElementById('respond-request-modal');
+            console.log('Modal element found:', modal !== null);
+            if (!modal) {
+                console.error('Modal element not found!');
+                return;
+            }
+            
+            // Update modal content
+            const titleElement = document.getElementById('respond-modal-title');
+            console.log('Title element found:', titleElement !== null);
+            if (titleElement) {
+                titleElement.textContent = title;
+                console.log('Title updated to:', title);
+            }
+            
+            // Update action button - simpler approach
+            const actionBtn = document.getElementById('respond-action-btn');
+            console.log('Action button found:', actionBtn !== null);
+            if (actionBtn) {
+                // Clear any existing event listeners by removing and re-adding onclick
+                actionBtn.onclick = null;
+                
+                // Update button text and class
+                actionBtn.textContent = actionText;
+                actionBtn.className = `request-btn ${isAccepting ? 'primary' : 'reject-btn'}`;
+                
+                // Set the onclick handler directly
+                actionBtn.onclick = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('=== BUTTON CLICKED ===');
+                    console.log('Button clicked, calling submitResponse');
+                    console.log('currentResponseRequestId:', currentResponseRequestId);
+                    console.log('currentResponseAction:', currentResponseAction);
+                    
+                    if (typeof submitResponse === 'function') {
+                        console.log('submitResponse function exists, calling it');
+                        submitResponse();
+                    } else {
+                        console.error('submitResponse function not found!');
+                    }
+                };
+                
+                console.log('Button updated with text:', actionText);
+                console.log('Button onclick handler set');
+            }
+            
+            // Update request info
+            const infoElement = document.getElementById('respond-request-info');
+            if (infoElement) {
+                infoElement.innerHTML = `
+                    <div style="background: ${isAccepting ? '#f0fff4' : '#fff5f5'}; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid ${isAccepting ? '#28a745' : '#dc3545'};">
+                        <strong>From:</strong> ${requesterName}<br>
+                        <strong>They want to learn:</strong> ${skillWanted}<br>
+                        <strong>In exchange for teaching:</strong> ${skillOffered}
+                    </div>
+                `;
+                console.log('Request info updated');
+            }
+            
+            // Clear and set placeholder for message
+            const messageElement = document.getElementById('response-message');
+            if (messageElement) {
+                messageElement.placeholder = placeholderText;
+                messageElement.value = '';
+                console.log('Message field updated');
+            }
+            
+            // Show modal
+            console.log('About to show modal...');
+            console.log('Modal classList before adding active:', modal.classList.toString());
+            modalJustOpened = true; // Set flag to prevent immediate closure
+            modal.classList.add('active');
+            console.log('Modal classList after adding active:', modal.classList.toString());
+            
+            // Force modal to be visible with inline styles as backup
+            modal.style.display = 'flex';
+            modal.style.visibility = 'visible';
+            modal.style.opacity = '1';
+            modal.style.zIndex = '9999';
+            
+            // Force check modal visibility
+            setTimeout(() => {
+                const modalStyle = window.getComputedStyle(modal);
+                console.log('Modal computed display:', modalStyle.display);
+                console.log('Modal computed visibility:', modalStyle.visibility);
+                console.log('Modal computed opacity:', modalStyle.opacity);
+                console.log('Modal getBoundingClientRect:', modal.getBoundingClientRect());
+                
+                // Double check if modal is actually visible
+                const rect = modal.getBoundingClientRect();
+                if (rect.width === 0 && rect.height === 0) {
+                    console.error('Modal has no dimensions! Forcing visibility...');
+                    modal.style.position = 'fixed';
+                    modal.style.top = '0';
+                    modal.style.left = '0';
+                    modal.style.width = '100vw';
+                    modal.style.height = '100vh';
+                }
+                
+                // Also check button status
+                const btn = document.getElementById('respond-action-btn');
+                if (btn) {
+                    console.log('Button after modal shown:');
+                    console.log('- Text:', btn.textContent);
+                    console.log('- Onclick:', btn.onclick !== null);
+                    console.log('- getBoundingClientRect:', btn.getBoundingClientRect());
+                }
+            }, 100);
+            
+            console.log('=== MODAL OPENING COMPLETE ===');
+        }
+        
+        function closeRespondRequestModal() {
+            console.log('=== CLOSING RESPONSE MODAL ===');
+            console.log('closeRespondRequestModal called from:', new Error().stack);
+            
+            const modal = document.getElementById('respond-request-modal');
+            if (modal) {
+                console.log('Modal found, removing active class');
+                modal.classList.remove('active');
+                
+                // Clear forced inline styles
+                modal.style.display = '';
+                modal.style.visibility = '';
+                modal.style.opacity = '';
+                modal.style.zIndex = '';
+                modal.style.position = '';
+                modal.style.top = '';
+                modal.style.left = '';
+                modal.style.width = '';
+                modal.style.height = '';
+                
+                console.log('Modal classList after removing active:', modal.classList.toString());
+                console.log('Modal should now be hidden');
+            } else {
+                console.log('Modal not found when trying to close');
+            }
+            currentResponseRequestId = null;
+            currentResponseAction = null;
+            modalJustOpened = false; // Reset flag when modal closes
+            console.log('=== MODAL CLOSING COMPLETE ===');
+        }
+        
+        async function submitResponse() {
+            console.log('submitResponse called');
+            console.log('currentResponseRequestId:', currentResponseRequestId);
+            console.log('currentResponseAction:', currentResponseAction);
+            
+            if (!currentResponseRequestId || !currentResponseAction) {
+                console.error('Missing required data for response');
+                showAlert('Error: Missing request information', 'error');
+                return;
+            }
+            
+            const message = document.getElementById('response-message').value.trim();
+            console.log('Response message:', message);
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/swap-requests/${currentResponseRequestId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ 
+                        status: currentResponseAction,
+                        acceptanceMessage: message
+                    })
+                });
+                
+                console.log('Response status:', response.status);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Response data:', data);
+                    
+                    const action = currentResponseAction === 'accepted' ? 'accepted' : 'declined';
+                    showAlert(`Request ${action} successfully! 🎉`, 'success');
+                    closeRespondRequestModal();
+                    loadRequests('received');
+                    refreshNotifications();
+                } else {
+                    const error = await response.json();
+                    console.error('API error:', error);
+                    showAlert(error.message || `Failed to ${currentResponseAction} request`, 'error');
+                }
+            } catch (error) {
+                console.error('Response submission failed:', error);
+                showAlert('Failed to respond to request. Please try again.', 'error');
+            }
+        }
+
+        async function respondToRequest(requestId, status) {
+            try {
+                const response = await fetch(`${API_BASE}/api/swap-requests/${requestId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+                
+                if (response.ok) {
+                    const action = status === 'accepted' ? 'accepted' : 'declined';
+                    showAlert(`Request ${action} successfully! 🎉`, 'success');
+                    loadRequests('received'); // Reload to show updated status
+                    // Refresh notifications after responding to request
+                    refreshNotifications();
+                } else {
+                    const error = await response.json();
+                    showAlert(error.message || `Failed to ${status} request`, 'error');
+                }
+            } catch (error) {
+                console.error('Request response error:', error);
+                showAlert('Failed to respond to request. Please try again.', 'error');
+            }
+        }
+        
+        async function cancelRequest(requestId) {
+            if (!confirm('Are you sure you want to cancel this request?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/swap-requests/${requestId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    showAlert('Request cancelled successfully', 'success');
+                    loadRequests('sent'); // Reload to remove cancelled request
+                    // Refresh notifications after cancelling request
+                    refreshNotifications();
+                } else {
+                    const error = await response.json();
+                    showAlert(error.message || 'Failed to cancel request', 'error');
+                }
+            } catch (error) {
+                console.error('Cancel request error:', error);
+                showAlert('Failed to cancel request. Please try again.', 'error');
+            }
+        }
+        
+        async function markCompleted(requestId) {
+            try {
+                const response = await fetch(`${API_BASE}/api/swap-requests/${requestId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    showAlert('Request marked as completed and removed! 🎉', 'success');
+                    loadRequests('sent'); // Reload to show updated list
+                    refreshNotifications(); // Update notification counts
+                } else {
+                    const error = await response.json();
+                    showAlert(error.message || 'Failed to mark as completed', 'error');
+                }
+            } catch (error) {
+                console.error('Mark completed error:', error);
+                showAlert('Failed to mark as completed. Please try again.', 'error');
+            }
+        }
+        
+        // Profile Management Functions
+        
+        function loadProfileData() {
+            console.log('=== Loading profile data for dashboard tab ===');
+            console.log('currentUser:', currentUser);
+            
+            if (currentUser) {
+                // Check if elements exist
+                const nameInput = document.getElementById('profile-name');
+                const locationInput = document.getElementById('profile-location');
+                const availabilityInput = document.getElementById('profile-availability');
+                
+                console.log('Profile form elements found:', {
+                    name: nameInput !== null,
+                    location: locationInput !== null, 
+                    availability: availabilityInput !== null
+                });
+                
+                if (nameInput) nameInput.value = currentUser.name || '';
+                if (locationInput) locationInput.value = currentUser.location || '';
+                if (availabilityInput) availabilityInput.value = currentUser.availability || 'Flexible';
+                
+                // CRITICAL: Load skills from current user data
+                console.log('Current user skills:', currentUser.skillsOffered, currentUser.skillsWanted);
+                
+                // Initialize arrays if they don't exist
+                profileSkillsOffered = [...(currentUser.skillsOffered || [])];
+                profileSkillsWanted = [...(currentUser.skillsWanted || [])];
+                
+                console.log('Dashboard profile skills loaded:');
+                console.log('profileSkillsOffered:', profileSkillsOffered);
+                console.log('profileSkillsWanted:', profileSkillsWanted);
+                
+                // Force update the display
+                updateProfileSkillsList('offered');
+                updateProfileSkillsList('wanted');
+            } else {
+                console.log('No current user available for profile loading');
+                // Initialize empty arrays
+                profileSkillsOffered = [];
+                profileSkillsWanted = [];
+            }
+        }
+        
+        function addProfileSkill(type) {
+            const input = document.getElementById(`profile-skill-${type}-input`);
+            const skill = input.value.trim();
+            
+            if (!skill) {
+                return;
+            }
+            
+            // Initialize arrays
+            if (!Array.isArray(profileSkillsOffered)) profileSkillsOffered = [];
+            if (!Array.isArray(profileSkillsWanted)) profileSkillsWanted = [];
+            
+            if (type === 'offered') {
+                if (!profileSkillsOffered.includes(skill)) {
+                    profileSkillsOffered.push(skill);
+                } else {
+                    return; // Skill already exists, do nothing
+                }
+            } else {
+                if (!profileSkillsWanted.includes(skill)) {
+                    profileSkillsWanted.push(skill);
+                } else {
+                    return; // Skill already exists, do nothing
+                }
+            }
+            
+            updateProfileSkillsList(type);
+            input.value = '';
+        }
+        
+        function removeProfileSkill(type, skill) {
+            if (type === 'offered') {
+                profileSkillsOffered = profileSkillsOffered.filter(s => s !== skill);
+                updateProfileSkillsList('offered');
+            } else {
+                profileSkillsWanted = profileSkillsWanted.filter(s => s !== skill);
+                updateProfileSkillsList('wanted');
+            }
+        }
+        
+        function updateProfileSkillsList(type) {
+            const container = document.getElementById(`profile-skills-${type}-list`);
+            const skills = type === 'offered' ? profileSkillsOffered : profileSkillsWanted;
+            
+            console.log(`Updating ${type} skills list:`, skills);
+            console.log(`Container element found:`, container !== null);
+            
+            if (!container) {
+                console.error(`Container not found: profile-skills-${type}-list`);
+                return;
+            }
+            
+            if (skills.length === 0) {
+                container.innerHTML = '<p style="color: #666; font-style: italic; margin: 10px 0;">No skills added yet</p>';
+            } else {
+                container.innerHTML = skills.map(skill => 
+                    `<div class="skill-tag">
+                        ${skill}
+                        <span class="remove" onclick="removeProfileSkill('${type}', '${skill}')">&times;</span>
+                    </div>`
+                ).join('');
+            }
+            
+            console.log(`Updated container HTML:`, container.innerHTML);
+        }
+        
+        async function updateSkills() {
+            if (!Array.isArray(profileSkillsOffered)) profileSkillsOffered = [];
+            if (!Array.isArray(profileSkillsWanted)) profileSkillsWanted = [];
+            
+            if (profileSkillsOffered.length === 0) {
+                showAlert('Please add at least one skill you can teach! 🎯', 'error');
+                return;
+            }
+            
+            if (profileSkillsWanted.length === 0) {
+                showAlert('Please add at least one skill you want to learn! 📚', 'error');
+                return;
+            }
+            
+            try {
+                const requestData = {
+                    skillsOffered: profileSkillsOffered,
+                    skillsWanted: profileSkillsWanted
+                };
+                
+                console.log('Sending skills update:', requestData);
+                console.log('Auth token exists:', !!authToken);
+                
+                const response = await fetch(`${API_BASE}/api/auth/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                console.log('Skills update response status:', response.status);
+                console.log('Skills update response ok:', response.ok);
+                
+                const data = await response.json();
+                console.log('Skills update response data:', data);
+                
+                if (data.success) {
+                    currentUser = data.data.user;
+                    showAlert('Skills saved successfully! 🎉', 'success');
+                    
+                    // Update dashboard stats
+                    const userStatsElement = document.getElementById('user-stats');
+                    if (userStatsElement) {
+                        userStatsElement.textContent = `${currentUser.skillsOffered?.length || 0} skills to teach • ${currentUser.skillsWanted?.length || 0} skills to learn`;
+                    }
+                } else {
+                    showAlert(data.message || 'Failed to save skills', 'error');
+                }
+            } catch (error) {
+                console.error('Skills update error details:', error);
+                showAlert('Error saving skills: ' + error.message, 'error');
+            }
+        }
+        
+        // Login form handler
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    authToken = data.data.token;
+                    localStorage.setItem('authToken', authToken);
+                    currentUser = data.data.user;
+                    console.log('Login successful, received user data:', currentUser);
+                    console.log('User skills offered:', currentUser.skillsOffered);
+                    console.log('User skills wanted:', currentUser.skillsWanted);
+                    showAlert(`Welcome back, ${currentUser.name}! 🎉`);
+                    // Immediately show dashboard instead of delay
+                    showDashboard();
+                    loadUsers();
+                } else {
+                    showAlert(data.message || 'Login failed', 'error');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('Login failed. Please check your connection and try again.', 'error');
+            }
+        });
+        
+        // Register form handler
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (skillsOffered.length === 0) {
+                showAlert('Please add at least one skill you can teach! 🎯', 'error');
+                return;
+            }
+            
+            if (skillsWanted.length === 0) {
+                showAlert('Please add at least one skill you want to learn! 📚', 'error');
+                return;
+            }
+            
+            const formData = {
+                name: document.getElementById('register-name').value,
+                email: document.getElementById('register-email').value,
+                password: document.getElementById('register-password').value,
+                location: document.getElementById('register-location').value,
+                availability: document.getElementById('register-availability').value,
+                skillsOffered: skillsOffered,
+                skillsWanted: skillsWanted
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    authToken = data.data.token;
+                    localStorage.setItem('authToken', authToken);
+                    currentUser = data.data.user;
+                    showAlert(`Welcome to Skill Swap, ${currentUser.name}! 🎉 Let's find your learning partners!`);
+                    // Immediately show dashboard instead of delay
+                    showDashboard();
+                    loadUsers();
+                } else {
+                    showAlert(data.message || 'Registration failed', 'error');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                showAlert(`Registration failed: ${error.message}. Please ensure the server is running and try again.`, 'error');
+            }
+        });
+        
+        // Profile form handler
+        document.getElementById('profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('profile-name').value.trim(),
+                location: document.getElementById('profile-location').value.trim(),
+                availability: document.getElementById('profile-availability').value
+            };
+            
+            if (!formData.name) {
+                showAlert('Name is required', 'error');
+                return;
+            }
+            
+            console.log('Sending profile update:', formData);
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                console.log('Profile update response status:', response.status);
+                const data = await response.json();
+                console.log('Profile update response data:', data);
+                
+                if (data.success) {
+                    currentUser = data.data.user;
+                    showAlert('Profile updated successfully! ✨', 'success');
+                    // Update dashboard display
+                    document.getElementById('user-name').textContent = `Welcome back, ${currentUser.name}!`;
+                    document.getElementById('user-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
+                    // Update navbar
+                    updateNavbar(true);
+                } else {
+                    showAlert(data.message || 'Failed to update profile', 'error');
+                }
+            } catch (error) {
+                console.error('Profile update error:', error);
+                showAlert('Failed to update profile. Please try again.', 'error');
+            }
+        });
+        
+        // Password change form handler
+        document.getElementById('password-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (newPassword !== confirmPassword) {
+                showAlert('New passwords do not match', 'error');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showAlert('New password must be at least 6 characters long', 'error');
+                return;
+            }
+            
+            console.log('Sending password change request...');
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/change-password`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        currentPassword: currentPassword,
+                        newPassword: newPassword
+                    })
+                });
+                
+                console.log('Password change response status:', response.status);
+                const data = await response.json();
+                console.log('Password change response data:', data);
+                
+                if (data.success) {
+                    showAlert('Password changed successfully! 🔒', 'success');
+                    // Clear form
+                    document.getElementById('password-form').reset();
+                } else {
+                    showAlert(data.message || 'Failed to change password', 'error');
+                }
+            } catch (error) {
+                console.error('Password change error:', error);
+                showAlert('Failed to change password. Please try again.', 'error');
+            }
+        });
+    </script>
+</body>
+</html>
